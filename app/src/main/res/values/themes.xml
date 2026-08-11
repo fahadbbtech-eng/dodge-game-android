@@ -1,0 +1,4 @@
+<resources>
+      <style name="Theme.DodgeGame" parent="Theme.AppCompat.NoActionBar">
+      </style>
+</resources>
