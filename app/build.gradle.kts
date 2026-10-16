@@ -5,19 +5,36 @@ plugins {
 
 android {
     namespace = "com.bluebell.dodgegame"
-    compileSdk = 34
+    compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.bluebell.dodgegame"
+        // Play Store id. Never change after the first upload.
+        applicationId = "in.bbtech.dodgegame"
         minSdk = 24
-        targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        targetSdk = 36
+        // Every GitHub build gets the next number, so Google Play always accepts the update.
+        val run = (System.getenv("GITHUB_RUN_NUMBER") ?: "1").toInt()
+        versionCode = run
+        versionName = "1.0.$run"
+    }
+
+    // Signing key lives only in GitHub secrets (never in this repo).
+    val ks = System.getenv("ANDROID_KEYSTORE_FILE")
+    signingConfigs {
+        create("release") {
+            if (ks != null) {
+                storeFile = file(ks)
+                storePassword = System.getenv("ANDROID_KEYSTORE_PASSWORD")
+                keyAlias = System.getenv("ANDROID_KEY_ALIAS") ?: "bbtech"
+                keyPassword = System.getenv("ANDROID_KEYSTORE_PASSWORD")
+            }
+        }
     }
 
     buildTypes {
         release {
             isMinifyEnabled = false
+            if (ks != null) signingConfig = signingConfigs.getByName("release")
         }
     }
 
